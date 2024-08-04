@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Operating System Quiz</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app">
+        <h1>Operating System Quiz</h1>
+        <div class="quiz">
+            <h2 id="question">Question goes here</h2>
+            <div id="answer-buttons">
+                <!-- Answer buttons will be dynamically added here -->
+            </div>
+            <button id="next-btn">Next</button>
+        </div>
+    </div>
+    <script>
+        const questions = [
+            {
+                question: "What does 'OS' stand for in the context of computing?",
+                answers: [
+                    { text: "Open Source", correct: false },
+                    { text: "Operating System", correct: true },
+                    { text: "Online Service", correct: false },
+                    { text: "Office Suite", correct: false }
+                ]
+            },
+            {
+                question: "Which of the following is a Unix-like operating system?",
+                answers: [
+                    { text: "Windows", correct: false },
+                    { text: "Linux", correct: true },
+                    { text: "macOS", correct: false },
+                    { text: "Android", correct: false }
+                ]
+            },
+            {
+                question: "What is the primary function of an operating system?",
+                answers: [
+                    { text: "Manage hardware and software resources", correct: true },
+                    { text: "Run applications", correct: false },
+                    { text: "Provide internet connectivity", correct: false },
+                    { text: "Perform data backups", correct: false }
+                ]
+            },
+            {
+                question: "Which operating system is known for its use in servers and supercomputers?",
+                answers: [
+                    { text: "Windows 10", correct: false },
+                    { text: "Ubuntu", correct: false },
+                    { text: "Red Hat Enterprise Linux", correct: true },
+                    { text: "iOS", correct: false }
+                ]
+            }
+        ];
+
+        const questionElement = document.getElementById("question");
+        const answerButtons = document.getElementById("answer-buttons");
+        const nextButton = document.getElementById("next-btn");
+
+        let currentQuestionIndex = 0;
+        let score = 0;
+
+        function startQuiz() {
+            currentQuestionIndex = 0;
+            score = 0;
+            nextButton.innerHTML = "Next";
+            showQuestion();
+        }
+
+        function showQuestion() {
+            resetState();
+            const currentQuestion = questions[currentQuestionIndex];
+            const questionNo = currentQuestionIndex + 1;
+            questionElement.innerHTML = questionNo + ". " + currentQuestion.question;
+
+            currentQuestion.answers.forEach(answer => {
+                const button = document.createElement("button");
+                button.innerHTML = answer.text;
+                button.classList.add("btn");
+                answerButtons.appendChild(button);
+                if (answer.correct) {
+                    button.dataset.correct = answer.correct;
+                }
+                button.addEventListener("click", selectAnswer);
+            });
+        }
+
+        function resetState() {
+            nextButton.style.display = "none";
+            while (answerButtons.firstChild) {
+                answerButtons.removeChild(answerButtons.firstChild);
+            }
+        }
+
+        function selectAnswer(e) {
+            const selectedBtn = e.target;
+            const isCorrect = selectedBtn.dataset.correct === "true";
+            if (isCorrect) {
+                selectedBtn.classList.add("correct");
+                score++;
+            } else {
+                selectedBtn.classList.add("incorrect");
+            }
+            Array.from(answerButtons.children).forEach(button => {
+                if (button.dataset.correct === "true") {
+                    button.classList.add("correct");
+                }
+                button.disabled = true;
+            });
+            nextButton.style.display = "block";
+        }
+
+        function showScore() {
+            resetState();
+            questionElement.innerHTML = `You scored ${score} out of ${questions.length}!`;
+            nextButton.innerHTML = "Play Again";
+            nextButton.style.display = "block";
+        }
+
+        function handleNextButton() {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < questions.length) {
+                showQuestion();
+            } else {
+                showScore();
+            }
+        }
+
+        nextButton.addEventListener("click", () => {
+            if (currentQuestionIndex < questions.length) {
+                handleNextButton();
+            } else {
+                startQuiz();
+            }
+        });
+
+        startQuiz();
+    </script>
+</body>
+</html>
+    

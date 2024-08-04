@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Computer Networks Quiz</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app">
+        <h1>Computer Networks Quiz</h1>
+        <div class="quiz">
+            <h2 id="question">Question goes here</h2>
+            <div id="answer-buttons">
+                <!-- Answer buttons will be dynamically added here -->
+            </div>
+            <button id="next-btn">Next</button>
+        </div>
+    </div>
+    <script>
+        const questions = [
+            {
+                question: "What does TCP stand for?",
+                answers: [
+                    { text: "Transmission Control Protocol", correct: true },
+                    { text: "Transmission Communication Protocol", correct: false },
+                    { text: "Transfer Control Protocol", correct: false },
+                    { text: "Transfer Communication Protocol", correct: false }
+                ]
+            },
+            {
+                question: "Which layer of the OSI model is responsible for data encryption?",
+                answers: [
+                    { text: "Physical Layer", correct: false },
+                    { text: "Data Link Layer", correct: false },
+                    { text: "Network Layer", correct: false },
+                    { text: "Presentation Layer", correct: true }
+                ]
+            },
+            {
+                question: "What is the primary function of a router in a network?",
+                answers: [
+                    { text: "To connect devices within the same network", correct: false },
+                    { text: "To assign IP addresses", correct: false },
+                    { text: "To route data between different networks", correct: true },
+                    { text: "To provide a physical connection", correct: false }
+                ]
+            },
+            {
+                question: "What is the maximum length of a CAT5 Ethernet cable for optimal performance?",
+                answers: [
+                    { text: "50 meters", correct: false },
+                    { text: "100 meters", correct: true },
+                    { text: "200 meters", correct: false },
+                    { text: "500 meters", correct: false }
+                ]
+            }
+        ];
+
+        const questionElement = document.getElementById("question");
+        const answerButtons = document.getElementById("answer-buttons");
+        const nextButton = document.getElementById("next-btn");
+
+        let currentQuestionIndex = 0;
+        let score = 0;
+
+        function startQuiz() {
+            currentQuestionIndex = 0;
+            score = 0;
+            nextButton.innerHTML = "Next";
+            showQuestion();
+        }
+
+        function showQuestion() {
+            resetState();
+            const currentQuestion = questions[currentQuestionIndex];
+            const questionNo = currentQuestionIndex + 1;
+            questionElement.innerHTML = questionNo + ". " + currentQuestion.question;
+
+            currentQuestion.answers.forEach(answer => {
+                const button = document.createElement("button");
+                button.innerHTML = answer.text;
+                button.classList.add("btn");
+                answerButtons.appendChild(button);
+                if (answer.correct) {
+                    button.dataset.correct = answer.correct;
+                }
+                button.addEventListener("click", selectAnswer);
+            });
+        }
+
+        function resetState() {
+            nextButton.style.display = "none";
+            while (answerButtons.firstChild) {
+                answerButtons.removeChild(answerButtons.firstChild);
+            }
+        }
+
+        function selectAnswer(e) {
+            const selectedBtn = e.target;
+            const isCorrect = selectedBtn.dataset.correct === "true";
+            if (isCorrect) {
+                selectedBtn.classList.add("correct");
+                score++;
+            } else {
+                selectedBtn.classList.add("incorrect");
+            }
+            Array.from(answerButtons.children).forEach(button => {
+                if (button.dataset.correct === "true") {
+                    button.classList.add("correct");
+                }
+                button.disabled = true;
+            });
+            nextButton.style.display = "block";
+        }
+
+        function showScore() {
+            resetState();
+            questionElement.innerHTML = `You scored ${score} out of ${questions.length}!`;
+            nextButton.innerHTML = "Play Again";
+            nextButton.style.display = "block";
+        }
+
+        function handleNextButton() {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < questions.length) {
+                showQuestion();
+            } else {
+                showScore();
+            }
+        }
+
+        nextButton.addEventListener("click", () => {
+            if (currentQuestionIndex < questions.length) {
+                handleNextButton();
+            } else {
+                startQuiz();
+            }
+        });
+
+        startQuiz();
+    </script>
+</body>
+</html>
